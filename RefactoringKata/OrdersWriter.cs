@@ -4,7 +4,7 @@ namespace RefactoringKata
 {
     public class OrdersWriter
     {
-        private Orders _orders;
+        private readonly Orders _orders;
 
         public OrdersWriter(Orders orders)
         {
