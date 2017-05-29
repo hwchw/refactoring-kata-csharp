@@ -12,12 +12,12 @@ namespace RefactoringKata
 			_product = product;
 		}
 
-		public static string GetSizeFor()
+		public static string GetSizeName()
 		{
 			return GetTypeName(typeof(ProductSize), _product.Size, "Invalid Size");
 		}
 
-		public static string GetColorFor()
+		public static string GetColorName()
 		{
 			return GetTypeName(typeof(ProductColor), _product.Color, "no color").ToLower();
 		}

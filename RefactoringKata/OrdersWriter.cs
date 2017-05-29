@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 
 namespace RefactoringKata
 {
@@ -9,13 +10,24 @@ namespace RefactoringKata
 		public OrdersWriter(Orders orders)
 		{
 			_orders = orders;
-
 		}
 
 		public string GetContents()
 		{
 			var sb = new StringBuilder("{\"orders\": [");
 
+			SetOrderRelatedDatas(sb);
+
+			if (_orders.GetOrdersCount() > 0)
+			{
+				sb.Remove(sb.Length - 2, 2);
+			}
+
+			return sb.Append("]}").ToString();
+		}
+
+		private void SetOrderRelatedDatas(StringBuilder sb)
+		{
 			for (var i = 0; i < _orders.GetOrdersCount(); i++)
 			{
 				var order = _orders.GetOrder(i);
@@ -25,32 +37,7 @@ namespace RefactoringKata
 				sb.Append(", ");
 				sb.Append("\"products\": [");
 
-				for (var j = 0; j < order.GetProductsCount(); j++)
-				{
-					var product = order.GetProduct(j);
-					TextExchangeHelper.SetProduct(product);
-					sb.Append("{");
-					sb.Append("\"code\": \"");
-					sb.Append(product.Code);
-					sb.Append("\", ");
-					sb.Append("\"color\": \"");
-					sb.Append(TextExchangeHelper.GetColorFor());
-					sb.Append("\", ");
-
-					if (product.Size != Product.SIZE_NOT_APPLICABLE)
-					{
-						sb.Append("\"size\": \"");
-						sb.Append(TextExchangeHelper.GetSizeFor());
-						sb.Append("\", ");
-					}
-
-					sb.Append("\"price\": ");
-					sb.Append(product.Price);
-					sb.Append(", ");
-					sb.Append("\"currency\": \"");
-					sb.Append(product.Currency);
-					sb.Append("\"}, ");
-				}
+				SetProductRelatedDatas(order, sb);
 
 				if (order.GetProductsCount() > 0)
 				{
@@ -60,13 +47,40 @@ namespace RefactoringKata
 				sb.Append("]");
 				sb.Append("}, ");
 			}
+		}
 
-			if (_orders.GetOrdersCount() > 0)
+		private static void SetProductRelatedDatas(Order order, StringBuilder sb)
+		{
+			for (var j = 0; j < order.GetProductsCount(); j++)
 			{
-				sb.Remove(sb.Length - 2, 2);
-			}
+				var product = order.GetProduct(j);
+				TextExchangeHelper.SetProduct(product);
 
-			return sb.Append("]}").ToString();
+				var stringOrder = new string[] { "{", "\"code\": \"", product.Code, "\", ", "\"color\": \"", TextExchangeHelper.GetColorName(), "\", " };
+				AppendStringWithArray(sb, stringOrder);
+
+				if (product.Size != Product.SIZE_NOT_APPLICABLE)
+				{
+					sb.Append("\"size\": \"");
+					sb.Append(TextExchangeHelper.GetSizeName());
+					sb.Append("\", ");
+				}
+
+				sb.Append("\"price\": ");
+				sb.Append(product.Price);
+				sb.Append(", ");
+				sb.Append("\"currency\": \"");
+				sb.Append(product.Currency);
+				sb.Append("\"}, ");
+			}
+		}
+
+		private static void AppendStringWithArray(StringBuilder sb, IEnumerable<string> stringOrder)
+		{
+			foreach (var dataFormatString in stringOrder)
+			{
+				sb.Append(dataFormatString);
+			}
 		}
 	}
 }
