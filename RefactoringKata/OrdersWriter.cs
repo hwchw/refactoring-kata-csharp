@@ -32,13 +32,13 @@ namespace RefactoringKata
                     sb.Append(product.Code);
                     sb.Append("\", ");
                     sb.Append("\"color\": \"");
-                    sb.Append(getColorFor(product));
+                    sb.Append(GetColorFor(product));
                     sb.Append("\", ");
 
                     if (product.Size != Product.SIZE_NOT_APPLICABLE)
                     {
                         sb.Append("\"size\": \"");
-                        sb.Append(getSizeFor(product));
+                        sb.Append(GetSizeFor(product));
                         sb.Append("\", ");
                     }
 
@@ -68,7 +68,7 @@ namespace RefactoringKata
         }
 
 
-        private string getSizeFor(Product product)
+        private static string GetSizeFor(Product product)
         {
             switch (product.Size)
             {
@@ -89,7 +89,7 @@ namespace RefactoringKata
             }
         }
 
-        private string getColorFor(Product product)
+        private static string GetColorFor(Product product)
         {
             switch (product.Color)
             {
