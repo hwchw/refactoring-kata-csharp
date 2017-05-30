@@ -31,11 +31,8 @@ namespace RefactoringKata
 			for (var i = 0; i < _orders.GetOrdersCount(); i++)
 			{
 				var order = _orders.GetOrder(i);
-				sb.Append("{");
-				sb.Append("\"id\": ");
-				sb.Append(order.GetOrderId());
-				sb.Append(", ");
-				sb.Append("\"products\": [");
+				var tempStringOrder = new[] { "{", "\"id\": ", order.GetOrderId().ToString(), ", ", "\"products\": [" };
+				AppendStringWithArray(sb, tempStringOrder);
 
 				SetProductRelatedDatas(order, sb);
 
@@ -44,8 +41,7 @@ namespace RefactoringKata
 					sb.Remove(sb.Length - 2, 2);
 				}
 
-				sb.Append("]");
-				sb.Append("}, ");
+				sb.Append("]}, ");
 			}
 		}
 
@@ -56,22 +52,17 @@ namespace RefactoringKata
 				var product = order.GetProduct(j);
 				TextExchangeHelper.SetProduct(product);
 
-				var stringOrder = new string[] { "{", "\"code\": \"", product.Code, "\", ", "\"color\": \"", TextExchangeHelper.GetColorName(), "\", " };
-				AppendStringWithArray(sb, stringOrder);
+				var productRelativeStringOrder = new[] { "{", "\"code\": \"", product.Code, "\", ", "\"color\": \"", TextExchangeHelper.GetColorName(), "\", " };
+				AppendStringWithArray(sb, productRelativeStringOrder);
 
 				if (product.Size != Product.SIZE_NOT_APPLICABLE)
 				{
-					sb.Append("\"size\": \"");
-					sb.Append(TextExchangeHelper.GetSizeName());
-					sb.Append("\", ");
+					var sizeRelativeStringOrder = new[] { "\"size\": \"", TextExchangeHelper.GetSizeName(), "\", " };
+					AppendStringWithArray(sb, sizeRelativeStringOrder);
 				}
 
-				sb.Append("\"price\": ");
-				sb.Append(product.Price);
-				sb.Append(", ");
-				sb.Append("\"currency\": \"");
-				sb.Append(product.Currency);
-				sb.Append("\"}, ");
+				var productRelativeEndingStringOrder = new[] { "\"price\": ", product.Price + "", ", ", "\"currency\": \"", product.Currency, "\"}, " };
+				AppendStringWithArray(sb, productRelativeEndingStringOrder);
 			}
 		}
 
