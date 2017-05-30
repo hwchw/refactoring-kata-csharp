@@ -18,11 +18,6 @@ namespace RefactoringKata
 
 			SetOrderRelatedDatas(sb);
 
-			if (_orders.GetOrdersCount() > 0)
-			{
-				sb.Remove(sb.Length - 2, 2);
-			}
-
 			return sb.Append("]}").ToString();
 		}
 
@@ -42,6 +37,10 @@ namespace RefactoringKata
 				}
 
 				sb.Append("]}, ");
+			}
+			if (_orders.GetOrdersCount() > 0)
+			{
+				sb.Remove(sb.Length - 2, 2);
 			}
 		}
 
