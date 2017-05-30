@@ -6,6 +6,7 @@ namespace RefactoringKata
 	public class OrdersWriter
 	{
 		private readonly Orders _orders;
+		private static StringBuilder _sb;
 
 		public OrdersWriter(Orders orders)
 		{
@@ -14,39 +15,39 @@ namespace RefactoringKata
 
 		public string GetContents()
 		{
-			var sb = new StringBuilder("{\"orders\": [");
+			_sb = new StringBuilder("{\"orders\": [");
 
-			SetOrderRelatedDatas(sb);
+			SetOrderRelatedDatas();
 
-			return sb.Append("]}").ToString();
+			return _sb.Append("]}").ToString();
 		}
 
-		private void SetOrderRelatedDatas(StringBuilder sb)
+		private void SetOrderRelatedDatas()
 		{
 			for (var i = 0; i < _orders.GetOrdersCount(); i++)
 			{
 				var order = _orders.GetOrder(i);
 				var orderDataDict = GetOrderAsDictionary(order);
-				AppendStringDictionaryToStringBuilder(sb, orderDataDict);
-				SetProductRelatedDatas(order, sb);
-				sb.Append("]}, ");
+				AppendStringDictionaryToStringBuilder(orderDataDict);
+				SetProductRelatedDatas(order);
+				_sb.Append("]}, ");
 			}
 			if (_orders.GetOrdersCount() > 0)
 			{
-				sb.Remove(sb.Length - 2, 2);
+				_sb.Remove(_sb.Length - 2, 2);
 			}
 		}
 
-		private static void SetProductRelatedDatas(Order order, StringBuilder sb)
+		private static void SetProductRelatedDatas(Order order)
 		{
-			sb.Append(", \"products\": [");
+			_sb.Append(", \"products\": [");
 			for (var j = 0; j < order.GetProductsCount(); j++)
 			{
 				var product = order.GetProduct(j);
 				TextExchangeHelper.SetProduct(product);
 				var productDataDict = GetSingleProductAsDictionary(product);
-				AppendStringDictionaryToStringBuilder(sb, productDataDict);
-				sb.Append("}");
+				AppendStringDictionaryToStringBuilder(productDataDict);
+				_sb.Append("}");
 			}
 		}
 
@@ -78,22 +79,14 @@ namespace RefactoringKata
 			return productSymbolDict;
 		}
 
-		private static void AppendStringDictionaryToStringBuilder(StringBuilder sb, Dictionary<string, string> targetDictionary)
+		private static void AppendStringDictionaryToStringBuilder(Dictionary<string, string> targetDictionary)
 		{
-			sb.Append("{");
+			_sb.Append("{");
 			foreach (var stringPair in targetDictionary)
 			{
-				sb.AppendFormat(IsFloatOrInt(stringPair.Value) ? "\"{0}\": {1}, " : "\"{0}\": \"{1}\", ", stringPair.Key, stringPair.Value);
+				_sb.AppendFormat(IsFloatOrInt(stringPair.Value) ? "\"{0}\": {1}, " : "\"{0}\": \"{1}\", ", stringPair.Key, stringPair.Value);
 			}
-			sb.Remove(sb.Length - 2, 2);
-		}
-
-		private static void AppendStringWithArray(StringBuilder sb, IEnumerable<string> stringOrder)
-		{
-			foreach (var dataFormatString in stringOrder)
-			{
-				sb.Append(dataFormatString);
-			}
+			_sb.Remove(_sb.Length - 2, 2);
 		}
 
 		private static bool IsFloatOrInt(string targetString)
