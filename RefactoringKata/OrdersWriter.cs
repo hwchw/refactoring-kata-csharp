@@ -47,12 +47,12 @@ namespace RefactoringKata
 			{
 				var product = order.GetProduct(j);
 				TextExchangeHelper.SetProduct(product);
-				var productDataDict = GetOneProductAsJsonArray(product);
+				var productDataDict = GetSingleProductAsDictionary(product);
 				AppendStringDictionaryToStringBuilder(sb, productDataDict);
 			}
 		}
 
-		private static Dictionary<string, string> GetOneProductAsJsonArray(Product product)
+		private static Dictionary<string, string> GetSingleProductAsDictionary(Product product)
 		{
 			var productSymbolDict = new Dictionary<string, string>
 			{
