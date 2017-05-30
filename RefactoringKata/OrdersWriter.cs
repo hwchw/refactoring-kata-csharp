@@ -6,7 +6,7 @@ namespace RefactoringKata
 	public class OrdersWriter
 	{
 		private readonly Orders _orders;
-		Dictionary<string, string> _info = new Dictionary<string, string>();
+
 		public OrdersWriter(Orders orders)
 		{
 			_orders = orders;
@@ -21,17 +21,14 @@ namespace RefactoringKata
 			return sb.Append("]}").ToString();
 		}
 
-
 		private void SetOrderRelatedDatas(StringBuilder sb)
 		{
 			for (var i = 0; i < _orders.GetOrdersCount(); i++)
 			{
 				var order = _orders.GetOrder(i);
-				var tempStringOrder = new[] { "{", "\"id\": ", order.GetOrderId().ToString(), ", " };
-				AppendStringWithArray(sb, tempStringOrder);
-
+				var orderDataDict = GetOrderAsDictionary(order);
+				AppendStringDictionaryToStringBuilder(sb, orderDataDict);
 				SetProductRelatedDatas(order, sb);
-
 				sb.Append("]}, ");
 			}
 			if (_orders.GetOrdersCount() > 0)
@@ -42,14 +39,24 @@ namespace RefactoringKata
 
 		private static void SetProductRelatedDatas(Order order, StringBuilder sb)
 		{
-			sb.Append("\"products\": [");
+			sb.Append(", \"products\": [");
 			for (var j = 0; j < order.GetProductsCount(); j++)
 			{
 				var product = order.GetProduct(j);
 				TextExchangeHelper.SetProduct(product);
 				var productDataDict = GetSingleProductAsDictionary(product);
 				AppendStringDictionaryToStringBuilder(sb, productDataDict);
+				sb.Append("}");
 			}
+		}
+
+		private static Dictionary<string, string> GetOrderAsDictionary(Order order)
+		{
+			var productSymbolDict = new Dictionary<string, string>
+			{
+				{"id", order.GetOrderId().ToString()},
+			};
+			return productSymbolDict;
 		}
 
 		private static Dictionary<string, string> GetSingleProductAsDictionary(Product product)
@@ -76,10 +83,9 @@ namespace RefactoringKata
 			sb.Append("{");
 			foreach (var stringPair in targetDictionary)
 			{
-				sb.AppendFormat(IsFloat(stringPair.Value) ? "\"{0}\": {1}, " : "\"{0}\": \"{1}\", ", stringPair.Key, stringPair.Value);
+				sb.AppendFormat(IsFloatOrInt(stringPair.Value) ? "\"{0}\": {1}, " : "\"{0}\": \"{1}\", ", stringPair.Key, stringPair.Value);
 			}
-			sb.Remove(sb.Length-2,2);
-			sb.Append("}");
+			sb.Remove(sb.Length - 2, 2);
 		}
 
 		private static void AppendStringWithArray(StringBuilder sb, IEnumerable<string> stringOrder)
@@ -90,10 +96,11 @@ namespace RefactoringKata
 			}
 		}
 
-		private static bool IsFloat(string targetString)
+		private static bool IsFloatOrInt(string targetString)
 		{
 			float f;
-			return float.TryParse(targetString, out f);
+			int i;
+			return float.TryParse(targetString, out f) || int.TryParse(targetString, out i);
 		}
 	}
 }
