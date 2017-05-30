@@ -11,34 +11,34 @@ namespace RefactoringKata
 		public OrdersWriter(Orders orders)
 		{
 			_orders = orders;
+			_sb = new StringBuilder();
 		}
 
 		public string GetContents()
 		{
-			_sb = new StringBuilder("{\"orders\": [");
-
-			SetOrderRelatedDatas();
-
-			return _sb.Append("]}").ToString();
+			_sb.Append("{\"orders\": [");
+			if (_orders.GetOrdersCount() > 0)
+			{
+				AppendOrdersToStringBuilder();
+			}
+			_sb.Append("]}");
+			return _sb.ToString();
 		}
 
-		private void SetOrderRelatedDatas()
+		private void AppendOrdersToStringBuilder()
 		{
 			for (var i = 0; i < _orders.GetOrdersCount(); i++)
 			{
-				var order = _orders.GetOrder(i);
-				var orderDataDict = GetOrderAsDictionary(order);
+				var orderDataDict = GetOrderAsDictionary(_orders.GetOrder(i));
+				_sb.Append("{");
 				AppendStringDictionaryToStringBuilder(orderDataDict);
-				SetProductRelatedDatas(order);
-				_sb.Append("]}, ");
+				AppendProductToStringBuilder(_orders.GetOrder(i));
+				_sb.Append("}, ");
 			}
-			if (_orders.GetOrdersCount() > 0)
-			{
-				_sb.Remove(_sb.Length - 2, 2);
-			}
+			RemoveLastPeriod();
 		}
 
-		private static void SetProductRelatedDatas(Order order)
+		private static void AppendProductToStringBuilder(Order order)
 		{
 			_sb.Append(", \"products\": [");
 			for (var j = 0; j < order.GetProductsCount(); j++)
@@ -46,9 +46,11 @@ namespace RefactoringKata
 				var product = order.GetProduct(j);
 				TextExchangeHelper.SetProduct(product);
 				var productDataDict = GetSingleProductAsDictionary(product);
+				_sb.Append("{");
 				AppendStringDictionaryToStringBuilder(productDataDict);
 				_sb.Append("}");
 			}
+			_sb.Append("]");
 		}
 
 		private static Dictionary<string, string> GetOrderAsDictionary(Order order)
@@ -81,11 +83,15 @@ namespace RefactoringKata
 
 		private static void AppendStringDictionaryToStringBuilder(Dictionary<string, string> targetDictionary)
 		{
-			_sb.Append("{");
 			foreach (var stringPair in targetDictionary)
 			{
 				_sb.AppendFormat(IsFloatOrInt(stringPair.Value) ? "\"{0}\": {1}, " : "\"{0}\": \"{1}\", ", stringPair.Key, stringPair.Value);
 			}
+			RemoveLastPeriod();
+		}
+
+		private static void RemoveLastPeriod()
+		{
 			_sb.Remove(_sb.Length - 2, 2);
 		}
 
