@@ -31,11 +31,6 @@ namespace RefactoringKata
 
 				SetProductRelatedDatas(order, sb);
 
-				if (order.GetProductsCount() > 0)
-				{
-					sb.Remove(sb.Length - 2, 2);
-				}
-
 				sb.Append("]}, ");
 			}
 			if (_orders.GetOrdersCount() > 0)
@@ -62,6 +57,10 @@ namespace RefactoringKata
 
 				var productRelativeEndingStringOrder = new[] { "\"price\": ", product.Price + "", ", ", "\"currency\": \"", product.Currency, "\"}, " };
 				AppendStringWithArray(sb, productRelativeEndingStringOrder);
+			}
+			if (order.GetProductsCount() > 0)
+			{
+				sb.Remove(sb.Length - 2, 2);
 			}
 		}
 
